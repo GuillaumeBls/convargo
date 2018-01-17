@@ -161,7 +161,7 @@ function setPrice() {
       if (deliverie.truckerId == truck.id) {
 
         distancePrice = deliverie.distance * truck.pricePerKm
-        
+
         if (deliverie.volume < 5) {
           volumePrice = deliverie.volume * truck.pricePerVolume
         }
@@ -177,15 +177,19 @@ function setPrice() {
         if (deliverie.volume >= 25) {
           volumePrice = deliverie.volume * truck.pricePerVolume * 0.50
         }
-        
+
       }
 
     })
-    
     deliverie.price = distancePrice + volumePrice
-    
+
+    if (deliverie.options.deductibleReduction == true) {
+        deliverie.price += deliverie.volume * 1
+    }
+
+
     deliverie.commission.insurance = deliverie.price * 0.15
-    deliverie.commission.treasury = parseInt(deliverie.distance / 500)
+    deliverie.commission.treasury = parseInt(deliverie.distance / 500) + 1
     deliverie.commission.convargo = deliverie.price * 0.3 - deliverie.commission.treasury
   })
 }
