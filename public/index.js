@@ -183,13 +183,45 @@ function setPrice() {
     })
     deliverie.price = distancePrice + volumePrice
 
+    var reduction = 0
     if (deliverie.options.deductibleReduction == true) {
-        deliverie.price += deliverie.volume * 1
+      deliverie.price += deliverie.volume
+      reduction += deliverie.volume
     }
+
 
 
     deliverie.commission.insurance = deliverie.price * 0.15
     deliverie.commission.treasury = parseInt(deliverie.distance / 500) + 1
     deliverie.commission.convargo = deliverie.price * 0.3 - deliverie.commission.treasury
+
+    actors.forEach(function (actor) {
+      var count
+      for (count = 0; count < actor.payment.length; count++) {
+        if (actor.deliveryId == deliverie.id) {
+          if (actor.payment[count].who == "shipper") {
+            actor.payment[count].amount = deliverie.price
+          }
+
+          if (actor.payment[count].who == "trucker") {
+            actor.payment[count].amount = deliverie.price - deliverie.commission.insurance - deliverie.commission.treasury - deliverie.commission.convargo
+          }
+
+          if (actor.payment[count].who == "insurance") {
+            actor.payment[count].amount == deliverie.commission.insurance
+          }
+
+          if (actor.payment[count].who == "treasury") {
+            actor.payment[count].amount = deliverie.commission.treasury
+          }
+
+          if (actor.payment[count].who == "convargo") {
+            actor.payment[count].amount = deliverie.commission.convargo + reduction
+          }
+        }
+      }
+    })
   })
+
+
 }
